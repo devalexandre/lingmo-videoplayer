@@ -1,5 +1,6 @@
 [Desktop Entry]
 Name=Video Player
+Name[pt_BR]=Reprodutor de vídeo
 Name[zh_CN]=视频播放器
 Exec=/usr/bin/lingmo-videoplayer %u
 Icon=lingmo-videoplayer

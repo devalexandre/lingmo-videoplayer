@@ -117,7 +117,7 @@ LingmoUI.Window {
         property url location: ""
 
         folder: location
-        title: "Select file"
+        title: qsTr("Select file")
         fileMode: Platform.FileDialog.OpenFile
 
         onAccepted: {

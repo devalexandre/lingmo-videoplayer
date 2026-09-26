@@ -8,18 +8,18 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-import QtGraphicalEffects 1.12
+import Qt5Compat.GraphicalEffects
 
-import LingmoUI 1.0 as CuteUI
+import LingmoUI.CompatibleModule 3.0 as LingmoUI
 import mpv 1.0
 
 Item {
     id: control
-    height: mpv.height - CuteUI.Units.largeSpacing * 2
-    width: CuteUI.Units.gridUnit * 16
+    height: mpv.height - LingmoUI.Units.largeSpacing * 2
+    width: LingmoUI.Units.gridUnit * 16
     z: 9999
     x: parent.width
-    y: CuteUI.Units.largeSpacing
+    y: LingmoUI.Units.largeSpacing
     state: "hidden"
 
     property string position: "right"
@@ -80,7 +80,7 @@ Item {
 
      Rectangle {
          anchors.fill: parent
-         color: CuteUI.Theme.backgroundColor
+         color: LingmoUI.Theme.backgroundColor
          opacity: 0.7
      }
 
@@ -92,7 +92,7 @@ Item {
          },
          State {
              name : "visible"
-             PropertyChanges { target: control; x: position === "right" ? parent.width - control.width - CuteUI.Units.largeSpacing : 0 }
+             PropertyChanges { target: control; x: position === "right" ? parent.width - control.width - LingmoUI.Units.largeSpacing : 0 }
              PropertyChanges { target: control; visible: true }
          }
      ]
@@ -144,7 +144,7 @@ Item {
 
              Rectangle {
                  anchors.fill: parent
-                 radius: CuteUI.Theme.bigRadius
+                 radius: LingmoUI.Theme.bigRadius
              }
          }
      }

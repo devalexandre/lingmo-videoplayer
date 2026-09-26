@@ -9,22 +9,22 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-import QtGraphicalEffects 1.12
+import Qt5Compat.GraphicalEffects
 import Qt.labs.platform 1.0 as Platform
 
-import LingmoUI 1.0 as CuteUI
+import LingmoUI.CompatibleModule 3.0 as LingmoUI
 import mpv 1.0
 
-CuteUI.Window {
+LingmoUI.Window {
     id: rootWindow
     width: 720
     height: 480
     minimumWidth: 700
     minimumHeight: 450
-    color: CuteUI.Theme.backgroundColor
+    color: LingmoUI.Theme.backgroundColor
 
     header.visible: !rootWindow.isFullScreen()
-    headerBackground.color: CuteUI.Theme.secondBackgroundColor
+    headerBackground.color: LingmoUI.Theme.secondBackgroundColor
     // headerBackground.opacity: 0.95
 
     contentTopMargin: header.visible ? header.height : 0
@@ -33,14 +33,14 @@ CuteUI.Window {
 
     onVisibilityChanged: {
         if (!rootWindow.isFullScreen()) {
-            preFullScreenVisibility = visibility
+            preFullScreenVisibility = rootWindow.visibility
         }
     }
 
     // Window move
     DragHandler {
         target: null
-        acceptedDevices: PointerDevice.GenericPointer
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
         grabPermissions: PointerHandler.CanTakeOverFromItems | PointerHandler.CanTakeOverFromHandlersOfDifferentType | PointerHandler.ApprovesTakeOverByAnything
         onActiveChanged: if (active) rootWindow.helper.startSystemMove(rootWindow)
     }
@@ -50,11 +50,11 @@ CuteUI.Window {
             id: headerLabel
             anchors.left: parent.left
             anchors.top: parent.top
-            anchors.topMargin: CuteUI.Units.smallSpacing * 1.5
-            anchors.leftMargin: CuteUI.Units.largeSpacing
+            anchors.topMargin: LingmoUI.Units.smallSpacing * 1.5
+            anchors.leftMargin: LingmoUI.Units.largeSpacing
             text: mpv.mediaTitle ? mpv.mediaTitle : qsTr("Video Player")
 //            color: "white"
-            color: CuteUI.Theme.textColor
+            color: LingmoUI.Theme.textColor
             z: 100
         }
 
@@ -64,7 +64,7 @@ CuteUI.Window {
 //            z: -1
 //            horizontalOffset: 1
 //            verticalOffset: 1
-//            radius: Math.round(6 * CuteUI.Units.devicePixelRatio)
+//            radius: Math.round(6 * LingmoUI.Units.devicePixelRatio)
 //            samples: radius * 2 + 1
 //            spread: 0.35
 //            color: Qt.rgba(0, 0, 0, 0.5)
@@ -97,7 +97,7 @@ CuteUI.Window {
         Button {
             visible: _logo.visible
             anchors.top: _logo.bottom
-            anchors.topMargin: CuteUI.Units.largeSpacing
+            anchors.topMargin: LingmoUI.Units.largeSpacing
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("Open")
             onClicked: fileDialog.open()

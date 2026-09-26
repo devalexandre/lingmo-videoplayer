@@ -9,9 +9,9 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Shapes 1.12
-import QtGraphicalEffects 1.0
+import Qt5Compat.GraphicalEffects
 
-import LingmoUI 1.0 as CuteUI
+import LingmoUI.CompatibleModule 3.0 as LingmoUI
 
 Slider {
     id: root
@@ -31,7 +31,7 @@ Slider {
 
     background: Rectangle {
         id: progressBarBackground
-        color: CuteUI.Theme.darkMode ? "#3E3E40" : "#E6E6E6"
+        color: LingmoUI.Theme.darkMode ? "#3E3E40" : "#E6E6E6"
 
         Rectangle {
             id: loopIndicator
@@ -48,7 +48,7 @@ Slider {
         Rectangle {
             width: visualPosition * parent.width
             height: parent.height
-            color: CuteUI.Theme.highlightColor
+            color: LingmoUI.Theme.highlightColor
         }
 
         ToolTip {
@@ -120,10 +120,10 @@ Slider {
             ShapePath {
                 id: shape
                 strokeWidth: 1
-                strokeColor: CuteUI.Theme.textColor
+                strokeColor: LingmoUI.Theme.textColor
                 startX: chapterMarkerShape.position
                 startY: root.height
-                fillColor: CuteUI.Theme.textColor
+                fillColor: LingmoUI.Theme.textColor
                 PathLine { x: shape.startX; y: -1 }
                 PathLine { x: shape.startX + 6; y: -7 }
                 PathLine { x: shape.startX - 7; y: -7 }

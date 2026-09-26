@@ -31,6 +31,8 @@
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickView>
+#include <QQuickWindow>
+#include <QSGRendererInterface>
 #include <QStandardPaths>
 #include <QStyle>
 #include <QTime>
@@ -44,8 +46,9 @@
 
 static QApplication *createApplication(int &argc, char **argv, const QString &applicationName)
 {
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+    // libmpv's render API is driven through QQuickFramebufferObject,
+    // which requires the OpenGL scene graph backend in Qt 6.
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
     QApplication::setOrganizationName("lingmoos");
     QApplication::setApplicationName(applicationName);
     QApplication::setOrganizationDomain("lingmo.org");

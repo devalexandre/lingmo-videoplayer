@@ -8,8 +8,11 @@ Open source video player built using Qt/QML and libmpv.
 
 ## Dependencies
 
+Qt 6 (Core, Gui, Quick, OpenGL, DBus, Widgets, LinguistTools), Qt 5 Compat
+(GraphicalEffects), libmpv and the LingmoUI QML module. On Arch Linux:
+
 ```shell
-sudo apt install extra-cmake-modules qtbase5-dev qtdeclarative5-dev qtquickcontrols2-5-dev libmpv-dev
+sudo pacman -S cmake ninja qt6-base qt6-declarative qt6-5compat qt6-svg qt6-tools mpv
 ```
 
 # Build

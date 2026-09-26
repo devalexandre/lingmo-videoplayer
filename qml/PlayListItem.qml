@@ -7,9 +7,9 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
-import QtGraphicalEffects 1.12
+import Qt5Compat.GraphicalEffects
 
-import LingmoUI 1.0 as CuteUI
+import LingmoUI.CompatibleModule 3.0 as LingmoUI
 
 Item {
     id: root
@@ -25,7 +25,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: CuteUI.Theme.backgroundColor
+        color: LingmoUI.Theme.backgroundColor
         opacity: 0.5
     }
 
@@ -60,16 +60,16 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        spacing: CuteUI.Units.largeSpacing
+        spacing: LingmoUI.Units.largeSpacing
 
         Label {
             text: pad(root.rowNumber, playlistView.count.toString().length)
             visible: true
             font.pointSize: (rootWindow.isFullScreen() && playList.bigFont)
-                            ? CuteUI.Units.gridUnit
-                            : CuteUI.Units.gridUnit - 6
+                            ? LingmoUI.Units.gridUnit
+                            : LingmoUI.Units.gridUnit - 6
             horizontalAlignment: Qt.AlignCenter
-            Layout.leftMargin: CuteUI.Units.largeSpacing
+            Layout.leftMargin: LingmoUI.Units.largeSpacing
 
             function pad(number, length) {
                 while (number.length < length)
@@ -85,24 +85,24 @@ Item {
             verticalAlignment: Qt.AlignVCenter
             elide: Text.ElideRight
             font.pointSize: (rootWindow.isFullScreen() && playList.bigFont)
-                            ? CuteUI.Units.gridUnit
-                            : CuteUI.Units.gridUnit - 6
+                            ? LingmoUI.Units.gridUnit
+                            : LingmoUI.Units.gridUnit - 6
             font.weight: Font.Normal
-            color: isPlaying ? CuteUI.Theme.highlightColor : CuteUI.Theme.textColor
+            color: isPlaying ? LingmoUI.Theme.highlightColor : LingmoUI.Theme.textColor
             text: model.name
             layer.enabled: true
             Layout.fillWidth: true
-            // Layout.leftMargin: PlaylistSettings.showRowNumber || isPlaying ? 0 : CuteUI.Units.largeSpacing
+            // Layout.leftMargin: PlaylistSettings.showRowNumber || isPlaying ? 0 : LingmoUI.Units.largeSpacing
         }
 
         Label {
             text: model.duration
             visible: model.duration.length > 0
             font.pointSize: (rootWindow.isFullScreen() && playList.bigFont)
-                            ? CuteUI.Units.gridUnit
-                            : CuteUI.Units.gridUnit - 6
+                            ? LingmoUI.Units.gridUnit
+                            : LingmoUI.Units.gridUnit - 6
             horizontalAlignment: Qt.AlignCenter
-            Layout.margins: CuteUI.Units.largeSpacing
+            Layout.margins: LingmoUI.Units.largeSpacing
         }
     }
 

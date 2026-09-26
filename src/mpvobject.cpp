@@ -21,6 +21,7 @@
 #include <QOpenGLFramebufferObject>
 #include <QProcess>
 #include <QQuickWindow>
+#include <QQuickOpenGLUtils>
 #include <QStandardPaths>
 #include <QtGlobal>
 
@@ -45,35 +46,10 @@ MpvRenderer::MpvRenderer(MpvObject *new_obj)
 
 void MpvRenderer::render()
 {
-    obj->window()->resetOpenGLState();
-
-    QOpenGLFramebufferObject *fbo = framebufferObject();
-    mpv_opengl_fbo mpfbo;
-    mpfbo.fbo = static_cast<int>(fbo->handle());
-    mpfbo.w = fbo->width();
-    mpfbo.h = fbo->height();
-    mpfbo.internal_format = 0;
-
-    mpv_render_param params[] = {
-        // Specify the default framebuffer (0) as target. This will
-        // render onto the entire screen. If you want to show the video
-        // in a smaller rectangle or apply fancy transformations, you'll
-        // need to render into a separate FBO and draw it manually.
-        {MPV_RENDER_PARAM_OPENGL_FBO, &mpfbo},
-        {MPV_RENDER_PARAM_INVALID, nullptr}
-    };
-    // See render_gl.h on what OpenGL environment mpv expects, and
-    // other API details.
-    mpv_render_context_render(obj->mpv_gl, params);
-
-    obj->window()->resetOpenGLState();
-}
-
-QOpenGLFramebufferObject * MpvRenderer::createFramebufferObject(const QSize &size)
-{
-    // init mpv_gl:
-    if (!obj->mpv_gl)
-    {
+    // Create the mpv render context lazily from inside render(): Qt Quick
+    // brackets this call with begin/endExternalCommands(), so mpv's GL setup
+    // does not race with the scene graph's cached OpenGL state.
+    if (!obj->mpv_gl) {
         mpv_opengl_init_params gl_init_params{get_proc_address_mpv, nullptr};
         mpv_render_param params[]{
             {MPV_RENDER_PARAM_API_TYPE, const_cast<char *>(MPV_RENDER_API_TYPE_OPENGL)},
@@ -84,10 +60,30 @@ QOpenGLFramebufferObject * MpvRenderer::createFramebufferObject(const QSize &siz
         if (mpv_render_context_create(&obj->mpv_gl, obj->mpv, params) < 0)
             throw std::runtime_error("failed to initialize mpv GL context");
         mpv_render_context_set_update_callback(obj->mpv_gl, on_mpv_redraw, obj);
-        emit obj->ready();
+        // This runs on the scene graph render thread; notify QML on the
+        // GUI thread, since the handlers call back into the mpv client API.
+        QMetaObject::invokeMethod(obj, &MpvObject::ready, Qt::QueuedConnection);
     }
 
-    return QQuickFramebufferObject::Renderer::createFramebufferObject(size);
+    QOpenGLFramebufferObject *fbo = framebufferObject();
+    mpv_opengl_fbo mpfbo;
+    mpfbo.fbo = static_cast<int>(fbo->handle());
+    mpfbo.w = fbo->width();
+    mpfbo.h = fbo->height();
+    mpfbo.internal_format = 0;
+
+    mpv_render_param params[] = {
+        // Render into the framebuffer object provided by
+        // QQuickFramebufferObject; Qt Quick composites it into the scene.
+        {MPV_RENDER_PARAM_OPENGL_FBO, &mpfbo},
+        {MPV_RENDER_PARAM_INVALID, nullptr}
+    };
+    // See render_gl.h on what OpenGL environment mpv expects, and
+    // other API details.
+    mpv_render_context_render(obj->mpv_gl, params);
+
+    // Make sure no GL state touched by mpv leaks into the scene graph.
+    QQuickOpenGLUtils::resetOpenGLState();
 }
 
 MpvObject::MpvObject(QQuickItem * parent)
@@ -105,6 +101,9 @@ MpvObject::MpvObject(QQuickItem * parent)
 //    setProperty("msg-level", "all=v");
 
 //    QString hwdec = PlaybackSettings::useHWDecoding() ? PlaybackSettings::hWDecoding() : "no";
+    // Render through the libmpv render API only; never let mpv open its
+    // own output window.
+    setProperty("vo", "libmpv");
     setProperty("hwdec", "auto");
 //    setProperty("screenshot-template", VideoSettings::screenshotTemplate());
     setProperty("sub-auto", "exact");
@@ -380,7 +379,6 @@ void MpvObject::setHWDecoding(bool value)
 
 QQuickFramebufferObject::Renderer *MpvObject::createRenderer() const
 {
-    window()->setPersistentOpenGLContext(true);
     window()->setPersistentSceneGraph(true);
     return new MpvRenderer(const_cast<MpvObject *>(this));
 }

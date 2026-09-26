@@ -9,7 +9,7 @@
 
 #include <QDBusAbstractAdaptor>
 
-class MpvObject;
+#include "../mpvobject.h"
 class QDBusObjectPath;
 
 class MediaPlayer2Player : public QDBusAbstractAdaptor

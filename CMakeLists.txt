@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.16)
 
 project(lingmo-videoplayer LANGUAGES CXX)
 
@@ -8,14 +8,16 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-find_package(Qt5 COMPONENTS Core Quick DBus Widgets LinguistTools REQUIRED)
-find_package(Libmpv)
+include(GNUInstallDirs)
 
-qt5_add_dbus_interface(screensaver_inhibit_SRCS ./org.freedesktop.ScreenSaver.xml screensaverdbusinterface)
+find_package(Qt6 CONFIG REQUIRED COMPONENTS Core Gui Quick OpenGL DBus Widgets LinguistTools)
+find_package(Libmpv REQUIRED)
+
+qt_add_dbus_interface(screensaver_inhibit_SRCS ./org.freedesktop.ScreenSaver.xml screensaverdbusinterface)
 
 set(PROJECT_SOURCES
     src/main.cpp
@@ -39,10 +41,12 @@ add_executable(lingmo-videoplayer
 
 target_link_libraries(lingmo-videoplayer
   PRIVATE
-  Qt5::Core
-  Qt5::Quick
-  Qt5::DBus
-  Qt5::Widgets
+  Qt6::Core
+  Qt6::Gui
+  Qt6::Quick
+  Qt6::OpenGL
+  Qt6::DBus
+  Qt6::Widgets
   Libmpv::Libmpv
 )
 
@@ -50,7 +54,7 @@ install(TARGETS lingmo-videoplayer DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 install(FILES
     lingmo-videoplayer.desktop
-    DESTINATION /usr/share/applications/
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
     COMPONENT Runtime
 )
 
@@ -59,7 +63,7 @@ foreach(filepath ${TS_FILES})
     string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" filename ${filepath})
     list(APPEND ts_files_replaced ${filename})
 endforeach()
-qt5_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${ts_files_replaced})
+qt_add_translation(QM_FILES ${ts_files_replaced})
 add_custom_target(translations ALL DEPENDS ${QM_FILES} SOURCES ${TS_FILES})
 
-install(FILES ${QM_FILES} DESTINATION /usr/share/lingmo-videoplayer/translations)
+install(FILES ${QM_FILES} DESTINATION ${CMAKE_INSTALL_DATADIR}/lingmo-videoplayer/translations)

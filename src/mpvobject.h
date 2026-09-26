@@ -229,10 +229,6 @@ public:
 
     MpvObject *obj;
 
-    // This function is called when a new FBO is needed.
-    // This happens on the initial frame.
-    QOpenGLFramebufferObject * createFramebufferObject(const QSize &size);
-
     void render();
 };
 

@@ -28,3 +28,16 @@ sudo make install
 # License
 
 This project has been licensed by GPLv3.
+
+## Playlist ordering
+
+Opened files and restored playlists use case-insensitive natural filename
+ordering (`Episode 2` before `Episode 10`). Opening an existing entry selects it
+without creating a duplicate. Sorting keeps the playing file and item indices
+consistent.
+
+```sh
+cmake -S tests -B /tmp/lingmo-playlist-tests
+cmake --build /tmp/lingmo-playlist-tests
+ctest --test-dir /tmp/lingmo-playlist-tests --output-on-failure
+```

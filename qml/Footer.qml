@@ -80,7 +80,7 @@ Item {
                     Label {
                         id: timeInfo
                         text: app ? app.formatTime(mpv.position) + " / " + app.formatTime(mpv.duration) : ""
-                        font.pointSize: 10
+                        font.pointSize: LingmoUI.Units.fontBody
                         visible: playList.playlistView.count >= 1
                         Layout.alignment: Qt.AlignVCenter
                     }

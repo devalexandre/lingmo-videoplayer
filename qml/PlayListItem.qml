@@ -29,6 +29,12 @@ Item {
         opacity: 0.5
     }
 
+    Rectangle {
+        anchors.fill: parent
+        color: itemMouse.containsMouse ? LingmoUI.Theme.hoverColor : "transparent"
+        Behavior on color { ColorAnimation { duration: LingmoUI.Units.veryShortDuration } }
+    }
+
     Menu {
         id: _itemMenu
 
@@ -44,7 +50,9 @@ Item {
     }
 
     MouseArea {
+        id: itemMouse
         anchors.fill: parent
+        hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
         onClicked: {
@@ -66,9 +74,10 @@ Item {
             text: pad(root.rowNumber, playlistView.count.toString().length)
             visible: true
             font.pointSize: (rootWindow.isFullScreen() && playList.bigFont)
-                            ? LingmoUI.Units.gridUnit
-                            : LingmoUI.Units.gridUnit - 6
+                            ? LingmoUI.Units.fontTitle
+                            : LingmoUI.Units.fontSubheading
             horizontalAlignment: Qt.AlignCenter
+            color: LingmoUI.Theme.secondaryTextColor
             Layout.leftMargin: LingmoUI.Units.largeSpacing
 
             function pad(number, length) {
@@ -85,8 +94,8 @@ Item {
             verticalAlignment: Qt.AlignVCenter
             elide: Text.ElideRight
             font.pointSize: (rootWindow.isFullScreen() && playList.bigFont)
-                            ? LingmoUI.Units.gridUnit
-                            : LingmoUI.Units.gridUnit - 6
+                            ? LingmoUI.Units.fontTitle
+                            : LingmoUI.Units.fontSubheading
             font.weight: Font.Normal
             color: isPlaying ? LingmoUI.Theme.highlightColor : LingmoUI.Theme.textColor
             text: model.name
@@ -99,9 +108,10 @@ Item {
             text: model.duration
             visible: model.duration.length > 0
             font.pointSize: (rootWindow.isFullScreen() && playList.bigFont)
-                            ? LingmoUI.Units.gridUnit
-                            : LingmoUI.Units.gridUnit - 6
+                            ? LingmoUI.Units.fontTitle
+                            : LingmoUI.Units.fontSubheading
             horizontalAlignment: Qt.AlignCenter
+            color: LingmoUI.Theme.secondaryTextColor
             Layout.margins: LingmoUI.Units.largeSpacing
         }
     }

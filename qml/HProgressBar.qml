@@ -31,7 +31,7 @@ Slider {
 
     background: Rectangle {
         id: progressBarBackground
-        color: LingmoUI.Theme.darkMode ? "#3E3E40" : "#E6E6E6"
+        color: LingmoUI.Theme.alternateBackgroundColor
 
         Rectangle {
             id: loopIndicator

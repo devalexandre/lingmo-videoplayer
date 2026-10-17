@@ -60,6 +60,7 @@ signals:
     void playingVideoChanged();
 
 private:
+    void sortByName();
     Playlist items() const;
     Playlist m_playList;
     int m_playingVideo = 0;

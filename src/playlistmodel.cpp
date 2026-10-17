@@ -8,6 +8,7 @@
 #include "playlistmodel.h"
 
 #include <QStandardPaths>
+#include <algorithm>
 #include <QCollator>
 #include <QDirIterator>
 #include <QFileInfo>
@@ -31,6 +32,7 @@ PlayListModel::PlayListModel(QObject *parent)
         ++idx;
     }
 
+    sortByName();
     if (!m_playList.isEmpty())
         setPlayingVideo(0);
 
@@ -182,18 +184,22 @@ void PlayListModel::addVideo(const QString &path)
 {
     QString newPath = QUrl(path).toLocalFile().isEmpty() ? path : QUrl(path).toLocalFile();
 
-    // Skip
+    if (QUrl(newPath).scheme().isEmpty())
+        newPath = QFileInfo(newPath).absoluteFilePath();
+
     for (int i = 0; i < m_playList.size(); ++i) {
         if (m_playList.at(i)->filePath() == newPath) {
+            setPlayingVideo(i);
             return;
         }
     }
 
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
-    auto video = new PlayListItem(newPath, m_playList.size() - 1, this);
+    auto video = new PlayListItem(newPath, m_playList.size(), this);
     m_playList.append(video);
-    setPlayingVideo(m_playList.size() - 1);
     endInsertRows();
+    sortByName();
+    setPlayingVideo(m_playList.indexOf(video));
 
     save();
 }
@@ -236,6 +242,9 @@ PlayListItem *PlayListModel::getItem(int i)
 
 void PlayListModel::setPlayingVideo(int playingVideo)
 {
+    if (playingVideo < 0 || playingVideo >= m_playList.size())
+        return;
+
     // unset current playing video
     m_playList[m_playingVideo]->setIsPlaying(false);
     emit dataChanged(index(m_playingVideo, 0), index(m_playingVideo, 0));
@@ -245,5 +254,27 @@ void PlayListModel::setPlayingVideo(int playingVideo)
     emit dataChanged(index(playingVideo, 0), index(playingVideo, 0));
 
     m_playingVideo = playingVideo;
+    emit playingVideoChanged();
+}
+
+void PlayListModel::sortByName()
+{
+    if (m_playList.isEmpty())
+        return;
+
+    auto playing = m_playList.value(m_playingVideo);
+    QCollator collator;
+    collator.setNumericMode(true);
+    collator.setCaseSensitivity(Qt::CaseInsensitive);
+    beginResetModel();
+    std::stable_sort(m_playList.begin(), m_playList.end(),
+                     [&collator](PlayListItem *left, PlayListItem *right) {
+        const int order = collator.compare(left->fileName(), right->fileName());
+        return order == 0 ? left->filePath() < right->filePath() : order < 0;
+    });
+    for (int i = 0; i < m_playList.size(); ++i)
+        m_playList[i]->setIndex(i);
+    m_playingVideo = qMax(0, m_playList.indexOf(playing));
+    endResetModel();
     emit playingVideoChanged();
 }

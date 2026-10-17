@@ -26,10 +26,13 @@ Item {
     property alias scrollPositionTimer: scrollPositionTimer
     property alias playlistView: playlistView
 
-    Label {
+    LingmoUI.EmptyState {
         anchors.centerIn: parent
+        width: parent.width - LingmoUI.Units.largeSpacing * 2
         z: 999
-        text: qsTr("Playlist is empty")
+        iconName: "video-x-generic"
+        iconSize: LingmoUI.Units.iconSizes.large
+        title: qsTr("Playlist is empty")
         visible: playlistView.count == 0
     }
 
@@ -106,7 +109,7 @@ Item {
                  NumberAnimation {
                      target: control
                      property: "x"
-                     duration: 150
+                     duration: LingmoUI.Units.shortDuration
                      easing.type: Easing.InQuad
                  }
                  PropertyAction {
@@ -129,7 +132,7 @@ Item {
                  NumberAnimation {
                      target: control
                      property: "x"
-                     duration: 150
+                     duration: LingmoUI.Units.shortDuration
                      easing.type: Easing.OutQuad
                  }
              }
